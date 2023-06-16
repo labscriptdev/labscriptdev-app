@@ -1,0 +1,3 @@
+#!/bin/bash
+chmod -R 777 ./laravel10/storage
+docker-compose up --build --force-recreate --remove-orphans
