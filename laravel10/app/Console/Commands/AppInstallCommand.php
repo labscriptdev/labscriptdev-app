@@ -2,6 +2,7 @@
  
 namespace App\Console\Commands;
  
+use App\Models\AppUser;
 use App\Models\AppSettings;
 use App\Models\AppMailTemplate;
 use Illuminate\Console\Command;
@@ -40,6 +41,7 @@ class AppInstallCommand extends Command
         $this->registerEmailTemplates();
         $this->clearLogFiles();
         $this->makeApiRoutes();
+        $this->notifyAdmins();
 
         $this->comment('app:install finish');
     }
@@ -197,5 +199,13 @@ class AppInstallCommand extends Command
         $lines[] = '';
 
         \File::put(base_path('/routes/api.php'), join("\n", $lines));
+    }
+
+    public function notifyAdmins()
+    {
+        (new AppUser)->where([ 'group_id' => 1 ])->sendNotification([
+            'name' => 'We are online',
+            'text' => 'The server starts again!',
+        ]);
     }
 }
