@@ -26,6 +26,6 @@ class AppTestCommand extends Command
      */
     public function handle()
     {
-        // test 4
+        // test 5
     }
 }
