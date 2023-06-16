@@ -26,10 +26,6 @@ class AppTestCommand extends Command
      */
     public function handle()
     {
-        $data = \App\Models\AppUser::search()->sendNotification([
-            'name' => 'Hello World :)',
-            'text' => 'Welcome!',
-        ]);
-        dd($data);
+        // 
     }
 }
