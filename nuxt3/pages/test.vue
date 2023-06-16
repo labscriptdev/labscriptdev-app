@@ -75,7 +75,7 @@
   import Pusher from 'pusher-js';
   import _ from 'lodash';
 
-  import useWebsocket from '@/composables/useWebsockets';
+  import useWebsocket from '@/composables/useWebsocket';
 
   const socket = useWebsocket({
     events: [
