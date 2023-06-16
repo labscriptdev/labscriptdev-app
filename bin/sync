@@ -17,6 +17,8 @@ file_paths=(
 
   # Laravel
   "laravel10/app/Console/Commands"
+  "laravel10/app/Events/Event"
+  "laravel10/app/Exceptions/Handler.php"
   "laravel10/app/Http/Controllers/AppController.php"
   "laravel10/app/Http/Controllers/AppFileController.php"
   "laravel10/app/Http/Controllers/AppMailController.php"
@@ -37,6 +39,9 @@ file_paths=(
   "laravel10/app/Models/AppUser.php"
   "laravel10/app/Models/AppUserGroup.php"
   "laravel10/app/Models/AppUserNotification.php"
+  "laravel10/app/Traits/ModelTrait.php"
+  "laravel10/app/Utils.php"
+  "laravel10/resources/emails"
 
   # Nuxt
   "nuxt3/components/app"
@@ -44,6 +49,7 @@ file_paths=(
 )
 
 if [ -d $base_path ]; then
+  cp "bin/sync" "${base_path}/bin/sync"
   for file_to in "${file_paths[@]}"; do
     file_from="${base_path}/${file_to}"
     if [ -f $file_from ]; then
