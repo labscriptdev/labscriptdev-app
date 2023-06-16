@@ -20,6 +20,15 @@ class AppUserNotification extends Model
         'text',
     ];
 
+    public function searchQuery($query, $request)
+    {
+        if ($request->read) {
+            // 
+        }
+
+        return $query;
+    }
+
     public function appUser(): HasOne
     {
         return $this->hasOne(AppUser::class, 'id', 'user_id');

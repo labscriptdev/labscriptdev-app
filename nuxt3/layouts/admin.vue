@@ -67,9 +67,48 @@
           <v-spacer></v-spacer>
           <div class="px-2">Welcome {{ app.user.name }}</div>
           <v-spacer></v-spacer>
-          <div class="px-2">...</div>
+
+          <div>
+            <v-btn stacked>
+              <v-badge :model-value="false" color="primary">
+                <v-icon>mdi-chat</v-icon>
+              </v-badge>
+            </v-btn>
+          </div>
+
+          <div>
+            <v-menu>
+              <template #activator="{ props }">
+                <v-btn v-bind="props" stacked>
+                  <v-badge
+                    :model-value="!!notification.success"
+                    :content="notification.success ? notification.success.data.length : null"
+                    color="primary"
+                  >
+                    <v-icon>mdi-bell</v-icon>
+                  </v-badge>
+                </v-btn>
+              </template>
+
+              <v-card width="300" class="mt-3">
+                <v-progress-linear indeterminate v-if="notification.loading" />
+                <v-list>
+                  <v-list-subheader>
+                    Notifications
+                  </v-list-subheader>
+                  <v-list-item
+                    v-for="n in notification.success.data"
+                  >
+                    <v-list-item-text>
+                      {{ n.name }}
+                    </v-list-item-text>
+                  </v-list-item>
+                </v-list>
+              </v-card>
+            </v-menu>
+          </div>
         </v-app-bar>
-  
+        
         <v-navigation-drawer
           v-model="drawer.main"
           v-bind="{
@@ -150,6 +189,25 @@
   
   import useApp from '@/composables/useApp';
   const app = useApp();
+  
+  import useWebsocket from '@/composables/useWebsocket';
+  const websocket = useWebsocket({
+    events: [
+      ['app_user_notification@created', (data) => {
+        notification.value.submit();
+      }],
+    ],
+  });
+
+  const notification = useAxios({
+    method: 'get',
+    url: 'api://app_user_notification',
+    params: {
+      user_id: 'me',
+      read: "0",
+    },
+    autoSubmit: true,
+  });
 
   const route = useRoute();
 

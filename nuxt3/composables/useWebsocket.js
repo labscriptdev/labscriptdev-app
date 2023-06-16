@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import _ from 'lodash';
+import Pusher from 'pusher-js';
 
 export default (params={}) => {
   const conf = useRuntimeConfig();
