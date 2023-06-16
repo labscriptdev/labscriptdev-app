@@ -1,12 +1,13 @@
 # Laravel + Nuxt + Docker
 ## Start dev server
 ```bash
-docker-compose up
+bash bin/dev
 ```
 
-or use short command
+or use composer command
+
 ```bash
-yarn dev
+docker-compose up
 ```
 
 ## Start prod server
