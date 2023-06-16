@@ -7,7 +7,7 @@ use App\Models\AppMailTemplate;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
  
-class AppInstall extends Command
+class AppInstallCommand extends Command
 {
     /**
      * The name and signature of the console command.
