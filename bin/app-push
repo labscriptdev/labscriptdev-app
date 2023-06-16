@@ -1,0 +1,34 @@
+#!/bin/bash
+
+source "bin/source.sh"
+
+submodule_path="app-submodule"
+
+# Add submodule
+git submodule add "https://github.com/labscriptdev/app.git" $submodule_path
+
+# Copy files
+for sync_file in "${sync_files[@]}"; do
+  copy_from=$sync_file
+  copy_to="$submodule_path/$sync_file"
+  copy_to_folder=$(dirname "$copy_to")
+
+  echo ""
+  echo "from:     $copy_from"
+  echo "to        $copy_to"
+
+  mkdir -p "$copy_to_folder"
+  cp $copy_from $copy_to
+done
+
+# Commit & push
+cd $submodule_path
+git add .
+git commit -m "$1"
+git push
+
+# Remove submodule
+cd ..
+git submodule deinit -f $submodule_path
+rm -rf ".git/modules/$submodule_path"
+git rm -f $submodule_path
