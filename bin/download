@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source "bin/source.sh"
+
+for sync_file in "${sync_files[@]}"; do
+  file_path=$(dirname "$sync_file")
+  mkdir -p "$file_path"
+
+  file_url="https://raw.githubusercontent.com/labscriptdev/app/main/$sync_file"
+  curl -o $sync_file $file_url
+
+  echo "Downloading: $file_url"
+done

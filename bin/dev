@@ -1,4 +1,8 @@
 #!/bin/bash
 
+if git diff --quiet --cached origin/main; then
+    source bin/download
+fi
+
 chmod -R 777 ./laravel10
 docker-compose up --build --force-recreate --remove-orphans
