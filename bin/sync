@@ -1,0 +1,59 @@
+#!/bin/bash
+
+source ".env"
+
+base_path="app"
+
+file_paths=(
+
+  # Adminer
+  "adminer"
+
+  # Bin
+  "bin/dev"
+  
+  # Docker
+  "docker"
+
+  # Laravel
+  "laravel10/app/Console/Commands"
+  "laravel10/app/Http/Controllers/AppController.php"
+  "laravel10/app/Http/Controllers/AppFileController.php"
+  "laravel10/app/Http/Controllers/AppMailController.php"
+  "laravel10/app/Http/Controllers/AppMailTemplateController.php"
+  "laravel10/app/Http/Controllers/AppPlaceController.php"
+  "laravel10/app/Http/Controllers/AppSettingsController.php"
+  "laravel10/app/Http/Controllers/AppUserController.php"
+  "laravel10/app/Http/Controllers/AppUserGroupController.php"
+  "laravel10/app/Http/Controllers/AppUserNotificationController.php"
+  "laravel10/app/Http/Controllers/AuthController.php"
+  "laravel10/app/Http/Controllers/Controller.php"
+  "laravel10/app/Http/Controllers/TestController.php"
+  "laravel10/app/Models/AppFile.php"
+  "laravel10/app/Models/AppMail.php"
+  "laravel10/app/Models/AppMailTemplate.php"
+  "laravel10/app/Models/AppPlace.php"
+  "laravel10/app/Models/AppSettings.php"
+  "laravel10/app/Models/AppUser.php"
+  "laravel10/app/Models/AppUserGroup.php"
+  "laravel10/app/Models/AppUserNotification.php"
+
+  # Nuxt
+  "nuxt3/components/app"
+  "nuxt3/composables"
+)
+
+if [ -d $base_path ]; then
+  for file_to in "${file_paths[@]}"; do
+    file_from="${base_path}/${file_to}"
+    if [ -f $file_from ]; then
+      echo "Copying file: $file_from ~ $file_to"
+      cp $file_from $file_to
+    else
+      echo "Copying folder: $file_from ~ $file_to"
+      cp -rT "$file_from" "$file_to"
+    fi
+  done
+else
+  echo "Path does not exists"
+fi
