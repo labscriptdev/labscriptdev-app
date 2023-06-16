@@ -40,7 +40,7 @@ services:
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP:-1000}'
-        entrypoint: bash -c "composer install && php artisan app:install && start-container"
+        entrypoint: bash -c "composer install && start-container"
         user: "0:0"
         extra_hosts:
             - 'host.docker.internal:host-gateway'
