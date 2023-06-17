@@ -65,10 +65,13 @@
         <v-app-bar @click="drawer.main=true">
           <v-btn icon="mdi-menu" flat class="d-lg-none"></v-btn>
           <v-toolbar-title>
-            {{ app.settings['app.name'] }}
+            <span class="font-weight-bold me-2">
+              {{ app.settings['app.name'] }}
+            </span>
+            <span class="text-subtitle-1 text-muted">
+              Welcome {{ app.user.name }}
+            </span>
           </v-toolbar-title>
-          <v-spacer></v-spacer>
-          <div class="px-2">Welcome {{ app.user.name }}</div>
           <v-spacer></v-spacer>
 
           <div>
