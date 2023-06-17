@@ -16,14 +16,15 @@ class AppUserNotification extends Model
     protected $fillable = [
         'name',
         'user_id',
+        'status',
         'url',
         'text',
     ];
 
     public function searchQuery($query, $request)
     {
-        if ($request->read) {
-            // 
+        if ($request->status) {
+            $query->where('status', $request->status);
         }
 
         return $query;

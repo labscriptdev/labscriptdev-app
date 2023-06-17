@@ -64,6 +64,9 @@
       <v-layout>
         <v-app-bar @click="drawer.main=true">
           <v-btn icon="mdi-menu" flat class="d-lg-none"></v-btn>
+          <v-toolbar-title>
+            {{ app.settings['app.name'] }}
+          </v-toolbar-title>
           <v-spacer></v-spacer>
           <div class="px-2">Welcome {{ app.user.name }}</div>
           <v-spacer></v-spacer>
@@ -76,12 +79,13 @@
             </v-btn>
           </div>
 
+          <!-- Notifications -->
           <div>
-            <v-menu>
+            <v-menu :close-on-content-click="false">
               <template #activator="{ props }">
                 <v-btn v-bind="props" stacked>
                   <v-badge
-                    :model-value="!!notification.success"
+                    :model-value="notification.success ? notification.success.data.length : false"
                     :content="notification.success ? notification.success.data.length : null"
                     color="primary"
                   >
@@ -92,18 +96,46 @@
 
               <v-card width="300" class="mt-3">
                 <v-progress-linear indeterminate v-if="notification.loading" />
-                <v-list>
-                  <v-list-subheader>
-                    Notifications
-                  </v-list-subheader>
-                  <v-list-item
-                    v-for="n in notification.success.data"
-                  >
-                    <v-list-item-text>
-                      {{ n.name }}
-                    </v-list-item-text>
-                  </v-list-item>
-                </v-list>
+                <v-window v-model="notifications.tab">
+                  <v-window-item value="list">
+                    <v-list>
+                      <v-list-subheader>
+                        Notifications
+                      </v-list-subheader>
+                      <v-divider></v-divider>
+                      <div
+                        v-if="notification.success && notification.success.data.length==0"
+                        class="text-center text-disabled py-3"
+                      >
+                        <div class="mb-2">Nothing to see</div>
+                        <v-icon size="40">mdi-emoticon-happy-outline</v-icon>
+                      </div>
+                      <v-list-item
+                        v-for="n in notification.success.data"
+                        @click="notifications.view(n)"
+                      >
+                        <v-list-item-text>
+                          {{ n.name }}
+                        </v-list-item-text>
+                      </v-list-item>
+                    </v-list>
+                  </v-window-item>
+                  <v-window-item value="view">
+                    <v-card-text class="border-b font-weight-bold">
+                      {{ notifications.data.name }}
+                    </v-card-text>
+                    <v-card-text>
+                      <div
+                        v-html="notifications.data.text"
+                        style="white-space: break-spaces;"
+                      ></div>
+                    </v-card-text>
+                    <v-card-actions class="border-t">
+                      <v-spacer />
+                      <v-btn @click="notifications.setTab('list')">Back</v-btn>
+                    </v-card-actions>
+                  </v-window-item>
+                </v-window>
               </v-card>
             </v-menu>
           </div>
@@ -186,6 +218,7 @@
 <script setup>
   import { ref, computed, defineProps } from 'vue';
   import { breakpointsVuetify, useBreakpoints } from '@vueuse/core';
+  import axios from 'axios';
   
   import useApp from '@/composables/useApp';
   const app = useApp();
@@ -204,9 +237,27 @@
     url: 'api://app_user_notification',
     params: {
       user_id: 'me',
-      read: "0",
+      status: "unread",
     },
     autoSubmit: true,
+  });
+
+  const notifications = ref({
+    tab: 'list',
+    data: false,
+    async view(notif) {
+      this.tab = 'view';
+      this.data = notif;
+      notif.status = 'read';
+      try {
+        const { data } = await axios.post(`api://app_user_notification`, notif);
+        this.data = data;
+        notification.value.submit();
+      } catch(err) {}
+    },
+    setTab(tab) {
+      this.tab = tab;
+    },
   });
 
   const route = useRoute();
