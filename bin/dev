@@ -1,7 +1,14 @@
 #!/bin/bash
 
-if git diff --quiet --cached origin/main; then
-    source bin/download
+source "bin/source.sh"
+
+# if git diff --quiet --cached origin/main; then
+#     source bin/download
+# fi
+
+if [ -n "$WSL_DISTRO_NAME" ]; then
+  explorer.exe "http://localhost:${NUXT_PORT}";
+  explorer.exe "http://localhost:${ADMINER_PORT}";
 fi
 
 chmod -R 777 ./laravel10

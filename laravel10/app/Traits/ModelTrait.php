@@ -140,25 +140,34 @@ trait ModelTrait
     return $this->plural;
   }
 
+  public function getWiths()
+  {
+    $withs = [];
+
+    $withTypes = [
+      'Illuminate\Database\Eloquent\Relations\HasOne',
+      'Illuminate\Database\Eloquent\Relations\HasMany',
+      'Illuminate\Database\Eloquent\Relations\BelongsTo',
+    ];
+
+    foreach((new \ReflectionClass($this))->getMethods() as $refMethod) {
+      if ($returnType = $refMethod->getReturnType()) {
+        if (in_array($returnType->getName(), $withTypes)) {
+          $withs[] = $refMethod->getName();
+        }
+      }
+    }
+
+    return $withs;
+  }
+
   public function searchOptionsDefault($query, $params=[])
   {
     $params = $this->searchParamsDefault($params);
     $options = [];
 
     // Withs
-    $options['with'] = [];
-    $withTypes = [
-      'Illuminate\Database\Eloquent\Relations\HasOne',
-      'Illuminate\Database\Eloquent\Relations\HasMany',
-      'Illuminate\Database\Eloquent\Relations\BelongsTo',
-    ];
-    foreach((new \ReflectionClass($this))->getMethods() as $refMethod) {
-      if ($returnType = $refMethod->getReturnType()) {
-        if (in_array($returnType->getName(), $withTypes)) {
-          $options['with'][] = $refMethod->getName();
-        }
-      }
-    }
+    $options['with'] = array_merge(['all'], $this->getWiths());
 
     return $options;
   }
@@ -232,6 +241,9 @@ trait ModelTrait
     // ?with[]=relation1&with[]=relation2
     if ($params->with) {
       $withs = is_array($params->with) ? $params->with : explode(',', $params->with);
+      if (in_array('all', $withs)) {
+        $withs = $this->getWiths();
+      }
       $query->with($withs);
     }
 

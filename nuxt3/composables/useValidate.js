@@ -70,7 +70,6 @@ export default (inputs, rules=[]) => {
       return error;
     },
     setData(data) {
-      console.log(data);
       this.message = data.message || '';
       this.errors = data.fields || [];
       errorsRaw = data.fields || [];
