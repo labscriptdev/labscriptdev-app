@@ -1,0 +1,23 @@
+<?php return [
+  'pk' => 'id',
+  'fields' => [
+    'id' => 'BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT',
+    'name' => 'VARCHAR(255) NULL DEFAULT NULL',
+    'route' => 'VARCHAR(255) NULL DEFAULT NULL',
+    'number' => 'VARCHAR(10) NULL DEFAULT NULL',
+    'zipcode' => 'VARCHAR(10) NULL DEFAULT NULL',
+    'complement' => 'VARCHAR(255) NULL DEFAULT NULL',
+    'reference' => 'VARCHAR(255) NULL DEFAULT NULL',
+    'district' => 'VARCHAR(255) NULL DEFAULT NULL',
+    'city' => 'VARCHAR(255) NULL DEFAULT NULL',
+    'state' => 'VARCHAR(255) NULL DEFAULT NULL',
+    'state_short' => 'VARCHAR(5) NULL DEFAULT NULL',
+    'country' => 'VARCHAR(255) NULL DEFAULT NULL',
+    'country_short' => 'VARCHAR(5) NULL DEFAULT NULL',
+    'lat' => 'DOUBLE NULL DEFAULT NULL',
+    'lng' => 'DOUBLE NULL DEFAULT NULL',
+    'created_at' => 'TIMESTAMP NULL DEFAULT NULL',
+    'updated_at' => 'TIMESTAMP NULL DEFAULT NULL',
+  ],
+  'fks' => [],
+];

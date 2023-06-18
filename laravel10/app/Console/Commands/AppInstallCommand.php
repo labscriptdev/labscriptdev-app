@@ -58,14 +58,27 @@ class AppInstallCommand extends Command
         return $data;
     }
 
-    public function getDatabaseSchema()
+    public function getDatabaseScheme()
     {
-        return include base_path('/database/schema.php');
+        $scheme = [
+            'collate' => 'utf8mb4_unicode_ci',
+            'engine' => 'InnoDB',
+            'tables' => [],
+        ];
+
+        foreach(glob(database_path('/scheme/*.php')) as $file) {
+            $data = include $file;
+            if (!is_array($data)) continue;
+            $table_name = pathinfo($file, PATHINFO_FILENAME);
+            $scheme['tables'][ $table_name ] = $data;
+        }
+
+        return $scheme;
     }
 
     public function migrate()
     {
-        $database_schema = $this->getDatabaseSchema();
+        $database_schema = $this->getDatabaseScheme();
         $tables = $this->query('SHOW TABLE STATUS', 'Name');
         $foreign_keys_sqls = [];
         
