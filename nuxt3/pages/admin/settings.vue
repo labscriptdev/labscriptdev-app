@@ -246,6 +246,9 @@
 <script setup>
   import { ref } from 'vue';
 
+  import useApp from '@/composables/useApp';
+  const app = useApp();
+
   const settings = useAxios({
     url: 'api://app_settings',
     method: 'get',
@@ -266,6 +269,7 @@
     method: 'post',
     onSuccess: ({ data }) => {
       save.value.data = data.settings;
+      app.init(true);
     },
   });
   

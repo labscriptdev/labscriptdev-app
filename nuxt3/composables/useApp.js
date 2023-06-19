@@ -23,7 +23,7 @@ export default (params={}) => {
     }),
     actions: {
       async init(force=false) {
-        if (force==false && this.ready) return;
+        if ( !(this.ready==false || force==true) ) return;
         this.ready = false;
         this.loading = true;
         try {

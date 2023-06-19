@@ -47,6 +47,14 @@ sync_files=(
   "laravel10/app/Models/AppUser.php"
   "laravel10/app/Models/AppUserGroup.php"
   "laravel10/app/Models/AppUserNotification.php"
+  "laravel10/database/scheme/app_file.php"
+  "laravel10/database/scheme/app_mail.php"
+  "laravel10/database/scheme/app_mail_template.php"
+  "laravel10/database/scheme/app_place.php"
+  "laravel10/database/scheme/app_settings.php"
+  "laravel10/database/scheme/app_user.php"
+  "laravel10/database/scheme/app_user_group.php"
+  "laravel10/database/scheme/app_user_notification.php"
 
   # Nuxt
   "nuxt3/components/app/auth/login.vue"
