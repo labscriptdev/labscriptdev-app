@@ -10,7 +10,13 @@
     'updated_at' => 'TIMESTAMP NULL DEFAULT NULL',
   ],
   'fks' => [
-    'owner_id' => [
+    'from_id' => [
+      'to_table' => 'app_user',
+      'to_field' => 'id',
+      'on_update' => 'NO ACTION',
+      'on_delete' => 'NO ACTION',
+    ],
+    'to_id' => [
       'to_table' => 'app_user',
       'to_field' => 'id',
       'on_update' => 'NO ACTION',

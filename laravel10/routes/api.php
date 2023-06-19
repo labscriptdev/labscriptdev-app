@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+new \App\Http\Controllers\AppChatRoomController();
+new \App\Http\Controllers\AppChatRoomMessageController();
 new \App\Http\Controllers\AppController();
 new \App\Http\Controllers\AppFileController();
 new \App\Http\Controllers\AppMailController();
