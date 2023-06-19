@@ -192,74 +192,6 @@
       </v-bottom-navigation>
     </form>
   </template>
-
-
-  <!-- Dialogs -->
-  <!-- Dialog delete -->
-  <v-dialog v-model="dialog.delete">
-    <v-card class="mx-auto" style="width:300px; max-width:90vw;">
-      <v-card-text>
-        Are you sure you want to delete this item?
-      </v-card-text>
-      <v-divider />
-      <v-card-actions>
-        <v-spacer />
-        <v-btn color="red">Delete</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-
-  
-  <!-- Actions -->
-  <!-- <v-bottom-navigation>
-    <template v-if="route.query.edit">
-      <v-btn
-        v-if="props.canDelete"
-        class="text-error"
-        @click="dialog.delete=true"
-      >
-        <v-icon>mdi-delete</v-icon>
-        <span>Delete</span>
-      </v-btn>
-
-      <v-btn
-        :to="`/admin/${props.name}`"
-      >
-        <v-icon>mdi-arrow-left</v-icon>
-        <span>Cancel</span>
-      </v-btn>
-  
-      <v-btn
-        :loading="edit.saving"
-        @click="edit.save()"
-        class="text-primary"
-        v-if="props.canSave"
-      >
-        <v-icon>mdi-content-save-outline</v-icon>
-        <span>Save</span>
-      </v-btn>
-    </template>
-
-    <template v-if="!route.query.edit">
-      <v-btn
-        :to="`/admin/${props.name}?edit=new`"
-        v-if="props.canCreate"
-      >
-        <v-icon>mdi-plus</v-icon>
-        <span>Create</span>
-      </v-btn>
-
-      <v-btn @click="dialog.search=true" class="d-lg-none">
-        <v-icon>mdi-magnify</v-icon>
-        <span>Search</span>
-      </v-btn>
-    </template>
-  </v-bottom-navigation> -->
-
-  <div class="d-flex">
-    <pre class="flex-grow-1 pa-2 border">route.query: {{ route.query }}</pre>
-    <pre class="flex-grow-1 pa-2 border">propsActions(): {{ propsActions() }}</pre>
-  </div>
 </template>
 
 <script setup>
@@ -329,7 +261,6 @@
   });
 
   const propsActions = (model={}, except=[]) => {
-    console.log(model);
     let propsActions = props.actions;
 
     if (typeof propsActions=='function') {
@@ -338,12 +269,12 @@
 
     const allActions = {
       delete: {
-        icon: 'mdi-close',
+        icon: 'mdi-delete',
         name: 'Delete',
         class: 'bg-error',
         order: 0,
         onClick(ev) {
-          console.log('delete:', ev);
+          // 
         },
         condition({ model }) {
           return !!model.id;

@@ -8,25 +8,6 @@
           searchParams: {
             with: 'appUserGroup',
           },
-          views: ['test'],
-          actions: {
-            chat: (model) => {
-              return {
-                icon: 'mdi-chat',
-                name: 'Chat',
-                onClick: () => {
-                  console.log('chat:', model);
-                },
-              };
-            },
-            test: (model) => {
-              return {
-                icon: 'mdi-search-web',
-                name: 'Test',
-                to: `?view=test&id=${model.id}`,
-              };
-            },
-          },
         }"
       >
         <template #search-table-header="bind">
