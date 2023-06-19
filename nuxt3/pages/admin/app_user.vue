@@ -8,6 +8,25 @@
           searchParams: {
             with: 'appUserGroup',
           },
+          views: ['test'],
+          actions: {
+            chat: (model) => {
+              return {
+                icon: 'mdi-chat',
+                name: 'Chat',
+                onClick: () => {
+                  console.log('chat:', model);
+                },
+              };
+            },
+            test: (model) => {
+              return {
+                icon: 'mdi-search-web',
+                name: 'Test',
+                to: `?view=test&id=${model.id}`,
+              };
+            },
+          },
         }"
       >
         <template #search-table-header="bind">
@@ -62,6 +81,15 @@
             </v-col>
           </v-row>
         </template>
+
+        <!-- <template #test="bind">
+          <pre>test bind: {{ bind }}</pre>
+        </template>
+        
+        <template #edit="bind">
+          <pre>test bind: {{ bind }}</pre>
+        </template> -->
+
       </app-model-crud>
     </template>
   </nuxt-layout>

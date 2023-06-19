@@ -1,35 +1,11 @@
 <template>
 
-  <!-- Edit -->
-  <form
-    v-if="route.query.edit"
-    @submit.prevent="edit.save()"
-  >
-    <v-defaults-provider
-      :defaults="{
-        VTextField: { disabled: edit.loading },
-        VTextarea: { disabled: edit.loading },
-        VFileInput: { disabled: edit.loading },
-        VSelect: { disabled: edit.loading },
-        VCheckbox: { disabled: edit.loading },
-        VCombobox: { disabled: edit.loading },
-      }"
-    >
-      <v-snackbar
-        v-model="edit.error.message"
-        v-if="edit.error.message"
-        color="error"
-        :close-delay="99000"
-        location="top"
-      >
-        {{ edit.error.message }}
-      </v-snackbar>
-      <slot name="edit-fields" v-bind="slotBind()"></slot>
-    </v-defaults-provider>
-  </form>
+  <template v-for="view in propsViews">
+    <slot :name="view" v-bind="slotBind()"></slot>
+  </template>
 
   <!-- Search -->
-  <template v-if="!route.query.edit">
+  <template v-if="route.query.view=='search'">
     <v-snackbar
       v-model="search.error.message"
       v-if="search.error.message"
@@ -104,16 +80,10 @@
                   <div class="d-flex me-2" style="gap:8px;">
                     <v-defaults-provider :defaults="searchActions">
                       <v-btn
-                        icon="mdi-close"
-                        color="error"
-                        v-if="props.canDelete"
-                        @click="dialog.delete=true"
-                      />
-                      <v-btn
-                        icon="mdi-pencil"
-                        :to="`/admin/${props.name}?edit=${item.id}`"
-                        @click="edit.data=item"
-                      />
+                        v-for="act in propsActions(item)"
+                        :key="act.id"
+                        v-bind="act.bind"
+                      ></v-btn>
                     </v-defaults-provider>
                   </div>
                 </v-menu>
@@ -168,6 +138,58 @@
           </div>
         </div>
       </v-navigation-drawer>
+
+      <v-bottom-navigation>
+        <v-btn
+          :to="`?view=edit`"
+        >
+          <v-icon>mdi-plus</v-icon>
+          <span>Create</span>
+        </v-btn>
+
+        <v-btn @click="dialog.search=true" class="d-lg-none">
+          <v-icon>mdi-magnify</v-icon>
+          <span>Search</span>
+        </v-btn>
+      </v-bottom-navigation>
+    </form>
+  </template>
+
+  <!-- Edit -->
+  <template v-if="route.query.view=='edit'">
+    <form @submit.prevent="edit.save()">
+      <v-defaults-provider
+        :defaults="{
+          VTextField: { disabled: edit.loading },
+          VTextarea: { disabled: edit.loading },
+          VFileInput: { disabled: edit.loading },
+          VSelect: { disabled: edit.loading },
+          VCheckbox: { disabled: edit.loading },
+          VCombobox: { disabled: edit.loading },
+        }"
+      >
+        <v-snackbar
+          v-model="edit.error.message"
+          v-if="edit.error.message"
+          color="error"
+          :close-delay="99000"
+          location="top"
+        >
+          {{ edit.error.message }}
+        </v-snackbar>
+        <slot name="edit-fields" v-bind="slotBind()"></slot>
+      </v-defaults-provider>
+
+      <v-bottom-navigation>
+        <v-btn
+          v-for="act in propsActions(edit.data)"
+          :key="act.id"
+          v-bind="act.bind"
+        >
+          <v-icon>{{ act.icon }}</v-icon>
+          <span>{{ act.name }}</span>
+        </v-btn>
+      </v-bottom-navigation>
     </form>
   </template>
 
@@ -189,8 +211,7 @@
 
   
   <!-- Actions -->
-  <v-bottom-navigation>
-    <!-- Edit -->
+  <!-- <v-bottom-navigation>
     <template v-if="route.query.edit">
       <v-btn
         v-if="props.canDelete"
@@ -219,7 +240,6 @@
       </v-btn>
     </template>
 
-    <!-- Search -->
     <template v-if="!route.query.edit">
       <v-btn
         :to="`/admin/${props.name}?edit=new`"
@@ -234,11 +254,18 @@
         <span>Search</span>
       </v-btn>
     </template>
-  </v-bottom-navigation>
+  </v-bottom-navigation> -->
+
+  <div class="d-flex">
+    <pre class="flex-grow-1 pa-2 border">route.query: {{ route.query }}</pre>
+    <pre class="flex-grow-1 pa-2 border">propsActions(): {{ propsActions() }}</pre>
+  </div>
 </template>
 
 <script setup>
-  import { watch, onMounted, defineProps, defineEmits } from 'vue';
+
+  // DOCS: /docs/nuxt3/app-model-crud.md
+  import { watch, computed, onMounted, defineProps, defineEmits } from 'vue';
   import axios from 'axios';
 
   import { breakpointsVuetify, useBreakpoints } from '@vueuse/core';
@@ -267,6 +294,14 @@
       type: String,
       default: '',
     },
+    actions: {
+      type: [ Object, Function ],
+      default: () => ({}),
+    },
+    views: {
+      type: Array,
+      default: () => ([]),
+    },
     searchTableSizes: {
       type: Array,
       default: () => ([]),
@@ -292,6 +327,103 @@
       default: true,
     },
   });
+
+  const propsActions = (model={}, except=[]) => {
+    console.log(model);
+    let propsActions = props.actions;
+
+    if (typeof propsActions=='function') {
+      propsActions = propsActions();
+    }
+
+    const allActions = {
+      delete: {
+        icon: 'mdi-close',
+        name: 'Delete',
+        class: 'bg-error',
+        order: 0,
+        onClick(ev) {
+          console.log('delete:', ev);
+        },
+        condition({ model }) {
+          return !!model.id;
+        },
+      },
+      edit: {
+        icon: 'mdi-pencil',
+        name: 'Edit',
+        class: 'bg-primary',
+        order: 10,
+        views: ['search'],
+        to: `?view=edit&id=${model.id}`,
+      },
+      cancel: {
+        icon: 'mdi-close',
+        name: 'Cancel',
+        order: 11,
+        views: ['edit'],
+        to: '?view=search',
+      },
+      save: {
+        icon: 'mdi-content-save-outline',
+        name: 'Save',
+        class: 'bg-primary',
+        order: 12,
+        views: ['edit'],
+        onClick() {
+          alert('');
+        },
+      },
+      ...propsActions
+    };
+    
+    return Object.entries(allActions)
+      .map(([ id, params ]) => {
+        const callbackParams = { model, route };
+
+        if (typeof params=='function') {
+          params = params(callbackParams);
+        }
+        
+        params = { ...params };
+
+        const name = params.name || 'No name';
+        if (params.name) delete params.name;
+
+        const order = params.order || 1;
+        if (params.order) delete params.order;
+
+        const views = params.views || [];
+        if (params.views) delete params.views;
+        if (views.length>0 && !views.includes(route.query.view)) {
+          return false;
+        }
+
+        const condition = params.condition || false;
+        if (typeof condition=='function') {
+          if (!condition(callbackParams)) return false;
+        }
+
+        return {
+          id, name, order,
+          bind: {
+            icon: 'mdi-close',
+            color: null,
+            ...params
+          },
+        };
+      })
+      .filter(value => !!value)
+      .sort((a, b) => {
+        return a.order - b.order;
+      });
+  };
+
+  const propsViews = [
+    'search',
+    'edit',
+    ...props.views
+  ];
 
   const searchActions = {
     VBtn: {
@@ -344,7 +476,7 @@
       this.error.clear();
       this.data = {};
 
-      const id = parseInt(route.query.edit || null) || null;
+      const id = parseInt(route.query.id || null) || null;
       if (!id) return;
       this.data = {};
 
@@ -408,14 +540,25 @@
     };
   };
 
+  const initHandler = () => {
+    if (route.query.view=='edit') {
+      edit.value.load();
+    }
+    else if (route.query.view=='search') {
+      search.value.submit();
+    }
+  };
+
   watch([ route ], ([ routeNew ]) => {
-    if (routeNew.query.edit) edit.value.load();
+    initHandler();
     emit('switch', slotBind({ edit: routeNew.query.edit || false }));
   });
 
   onMounted(() => {
-    search.value.submit();
-    edit.value.load();
+    if (!route.query.view) {
+      router.push('?view=search');
+    }
+    initHandler();
     emit('update:modelValue', slotBind());
     emit('ready', slotBind());
   });
