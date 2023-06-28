@@ -23,8 +23,14 @@ yarn build
 ## TODO
 - ⬛ Ports in settings .env
 - ⬛ Nuxt 3
+  - ⬛ Onboarding component
 - ⬛ Laravel
   - ⬛ File garbage collector
+  - ⬛ Allow save deep data based on "with" relationships attributes
+  - ⬛ Chat/Mail
+  - ⬛ Model save with relationships
+  - ⬛ Model import data
+  - ⬛ Model export data
 
 <hr />
 
