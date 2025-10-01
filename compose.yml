@@ -1,0 +1,28 @@
+volumes:
+    database_volume:
+        driver: local
+    cloudbeaver_volume:
+
+networks:
+    main_network:
+
+services:
+    database:
+        build: ./database
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_DB: app
+            POSTGRES_USER: app
+            POSTGRES_PASSWORD: app
+        volumes:
+            - database_volume:/var/lib/postgresql/data/
+
+    backend:
+        build: ./backend
+        volumes:
+            - ./backend/app:/var/www/html
+        ports:
+            - 8000:8000
+        depends_on:
+            - database
