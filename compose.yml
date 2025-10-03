@@ -17,6 +17,17 @@ services:
             POSTGRES_PASSWORD: app
         volumes:
             - database_volume:/var/lib/postgresql/data/
+        networks:
+            - main_network
+
+    dbmanager:
+        image: dbeaver/cloudbeaver
+        volumes:
+            - cloudbeaver_volume:/opt/cloudbeaver/workspace
+        ports:
+            - 8978:8978
+        networks:
+            - main_network
 
     backend:
         build: ./backend
@@ -26,3 +37,24 @@ services:
             - 8000:8000
         depends_on:
             - database
+        links:
+            - database
+        networks:
+            - main_network
+
+    keycloak:
+        build: ./keycloak
+        environment:
+            KC_DB: postgres
+            KC_DB_URL_HOST: database
+            KC_DB_URL_DATABASE: app
+            KC_DB_USERNAME: app
+            KC_DB_PASSWORD: app
+            KEYCLOAK_ADMIN: app
+            KEYCLOAK_ADMIN_PASSWORD: app
+        depends_on:
+            - database
+        ports:
+            - 8080:8080
+        networks:
+            - main_network
