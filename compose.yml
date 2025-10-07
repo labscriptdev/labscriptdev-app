@@ -51,6 +51,8 @@ services:
             # KC_DB_PASSWORD: app
             KEYCLOAK_ADMIN: app
             KEYCLOAK_ADMIN_PASSWORD: app
+        # volumes:
+        #     - ./keycloak/.data:/var/lib/postgresql/data
         depends_on:
             - database
         ports:

@@ -1,2 +1,2 @@
-FROM quay.io/keycloak/keycloak:25.0.6
+FROM quay.io/keycloak/keycloak:latest
 CMD ["start-dev"]
