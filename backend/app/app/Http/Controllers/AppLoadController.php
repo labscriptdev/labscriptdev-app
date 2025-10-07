@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AppFile;
+use App\Models\AppConfig;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class AppLoadController extends Controller
 {
     public $methods = ['get'];
-    public $route = '/load';
+    public $route = '/app/load';
 
     public function __invoke(Request $request)
     {
         $scope = new \stdClass;
+        $scope->config = AppConfig::get('public');
         return $scope;
     }
 

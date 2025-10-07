@@ -1,19 +1,32 @@
 import Keycloak from "keycloak-js";
+import axios from "axios";
 
 export default () => {
   const r = defineStore("useApp", () => {
     const meta = reactive({
       keycloak: null,
+      authInit: false,
+      auth: false,
     });
 
     return reactive({
       ready: false,
       busy: false,
       user: null,
+      config: {},
+
+      async login() {
+        await meta.keycloak.login({ redirectUri: location.href });
+      },
+
+      async logout() {
+        await meta.keycloak.logout({ redirectUri: `${location.origin}/` });
+      },
 
       async init() {
         r.busy = true;
         await r.initKeycloak();
+        await r.initData();
         r.busy = false;
         r.ready = true;
       },
@@ -28,13 +41,16 @@ export default () => {
             });
           }
 
-          const auth = await meta.keycloak.init({
-            onLoad: "check-sso",
-            pkceMethod: "S256",
-            checkLoginIframe: false,
-          });
+          if (!meta.authInit) {
+            meta.authInit = true;
+            meta.auth = await meta.keycloak.init({
+              onLoad: "check-sso",
+              pkceMethod: "S256",
+              checkLoginIframe: false,
+            });
+          }
 
-          if (auth) {
+          if (meta.auth) {
             r.user = {
               email: meta.keycloak.tokenParsed.email,
               name: meta.keycloak.tokenParsed.name,
@@ -45,12 +61,11 @@ export default () => {
         }
       },
 
-      async login() {
-        await meta.keycloak.login({ redirectUri: location.href });
-      },
-
-      async logout() {
-        await meta.keycloak.logout({ redirectUri: `${location.origin}/` });
+      async initData() {
+        try {
+          const { data } = await axios.get("backend://api/app/load");
+          r.config = data.config;
+        } catch (_) {}
       },
     });
   })();
