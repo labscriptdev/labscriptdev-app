@@ -7,6 +7,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       SERVICE_BACKEND_URL: process.env.SERVICE_BACKEND_URL,
+      SERVICE_KEYCLOAK_REALM: process.env.SERVICE_KEYCLOAK_REALM,
+      SERVICE_KEYCLOAK_CLIENT_PUBLIC:
+        process.env.SERVICE_KEYCLOAK_CLIENT_PUBLIC,
     },
   },
 

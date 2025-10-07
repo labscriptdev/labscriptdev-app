@@ -3,6 +3,9 @@ import axios from "axios";
 
 export default () => {
   const r = defineStore("useApp", () => {
+    const conf = useRuntimeConfig();
+    console.log(conf);
+
     const meta = reactive({
       keycloak: null,
       authInit: false,
@@ -36,8 +39,8 @@ export default () => {
           if (!meta.keycloak) {
             meta.keycloak = new Keycloak({
               url: "http://localhost:8080",
-              realm: "app",
-              clientId: "app",
+              realm: conf.public.SERVICE_KEYCLOAK_REALM,
+              clientId: conf.public.SERVICE_KEYCLOAK_CLIENT_PUBLIC,
             });
           }
 
