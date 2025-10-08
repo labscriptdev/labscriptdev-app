@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\AppConfig;
 use Illuminate\Console\Command;
 
 class AppTestCommand extends Command
@@ -18,13 +19,15 @@ class AppTestCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Test Command';
+    protected $description = 'Test command';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $this->info('Aaaa');
+        AppConfig::set('secret.root_user_id', null);
+        $id = AppConfig::get('secret.root_user_id');
+        dump($id);
     }
 }

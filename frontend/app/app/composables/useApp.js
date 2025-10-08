@@ -4,7 +4,6 @@ import axios from "axios";
 export default () => {
   const r = defineStore("useApp", () => {
     const conf = useRuntimeConfig();
-    console.log(conf);
 
     const meta = reactive({
       keycloak: null,
@@ -15,6 +14,7 @@ export default () => {
     return reactive({
       ready: false,
       busy: false,
+      token: null,
       user: null,
       config: {},
 
@@ -40,8 +40,14 @@ export default () => {
             meta.keycloak = new Keycloak({
               url: "http://localhost:8080",
               realm: conf.public.SERVICE_KEYCLOAK_REALM,
-              clientId: conf.public.SERVICE_KEYCLOAK_CLIENT_PUBLIC,
+              clientId: conf.public.SERVICE_KEYCLOAK_CLIENT,
             });
+
+            meta.keycloak.onAuthLogout = () => {
+              localStorage.removeItem("backend_token");
+              r.user = null;
+              r.token = null;
+            };
           }
 
           if (!meta.authInit) {
@@ -53,21 +59,25 @@ export default () => {
             });
           }
 
+          console.log(meta.auth);
           if (meta.auth) {
+            localStorage.setItem("backend_token", meta.keycloak.token);
+            r.token = meta.keycloak.token;
             r.user = {
               email: meta.keycloak.tokenParsed.email,
               name: meta.keycloak.tokenParsed.name,
             };
+          } else {
+            localStorage.removeItem("backend_token");
           }
-        } catch (e) {
-          console.log(e);
-        }
+        } catch (_) {}
       },
 
       async initData() {
         try {
           const { data } = await axios.get("backend://api/app/load");
           r.config = data.config;
+          r.user = data.user;
         } catch (_) {}
       },
     });

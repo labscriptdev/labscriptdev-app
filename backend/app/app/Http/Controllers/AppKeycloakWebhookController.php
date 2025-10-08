@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AppFile;
 use App\Models\AppUser;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class AppKeycloakWebhookController extends Controller
 {
@@ -23,18 +23,16 @@ class AppKeycloakWebhookController extends Controller
 
         $scope->all = $request->all();
 
-        // $output_file = base_path('webhook.log');
-        // $content = '';
-        // $content .= "\n-----------------------";
-        // $content .= "\n- " . date('Y-m-d H:i:s') . " -";
-        // $content .= "\n-----------------------";
-        // $content .= "\n" . json_encode($scope, JSON_PRETTY_PRINT);
-        // $content .= "\n" . file_get_contents($output_file);
-        // file_put_contents($output_file, $content);
+        $this->log([
+            "-----------------------",
+            "- " . date('Y-m-d H:i:s') . " -",
+            "-----------------------",
+            json_encode($scope, JSON_PRETTY_PRINT),
+        ]);
 
-        if ($request->type == 'REGISTER') {
-            $this->appUserRegister($request);
-        }
+        $this->appUserCreateActions($request);
+        $this->appUserUpdateActions($request);
+        $this->appUserDeleteActions($request);
 
         return $scope;
     }
@@ -46,12 +44,40 @@ class AppKeycloakWebhookController extends Controller
         ];
     }
 
-    public function appUserRegister(Request $request)
+    protected function appUserCreateActions(Request $request)
     {
-        AppUser::create([
-            'name' => "{$request->details['first_name']} {$request->details['last_name']}",
-            'email' => $request->details['email'],
-            'keycloak_id' => $request->userId,
-        ]);
+        if ($request->type == 'REGISTER') {
+            AppUser::create([
+                'name' => "{$request->details['first_name']} {$request->details['last_name']}",
+                'email' => $request->details['email'],
+                'keycloak_id' => $request->userId,
+            ]);
+        } else if ($request->type == 'USER-CREATE') {
+            $details = json_decode($request->representation, true);
+            AppUser::create([
+                'name' => "{$details['firstName']} {$details['lastName']}",
+                'email' => $details['email'],
+                'keycloak_id' => $request->userId,
+            ]);
+        }
+    }
+
+    protected function log($data)
+    {
+        if (is_array($data)) $data = join("\n", $data) . "\n";
+        File::prepend(storage_path('logs/webhook.log'), $data);
+    }
+
+    protected function appUserUpdateActions(Request $request)
+    {
+        // 
+    }
+
+    protected function appUserDeleteActions(Request $request)
+    {
+        if ($request->type == 'USER-DELETE') {
+            $user = AppUser::where('keycloak_id', $request->userId)->first();
+            if ($user) $user->delete();
+        }
     }
 }

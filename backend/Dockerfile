@@ -17,6 +17,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 COPY ./supervisord.conf /etc/supervisord.conf
 COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY ./site.conf /etc/nginx/conf.d/default.conf
+COPY ./www.conf /usr/local/etc/php-fpm.d/www.conf
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh

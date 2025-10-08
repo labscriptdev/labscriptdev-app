@@ -14,6 +14,7 @@ class AppLoadController extends Controller
     {
         $scope = new \stdClass;
         $scope->config = AppConfig::get('public');
+        $scope->user = $request->user();
         return $scope;
     }
 

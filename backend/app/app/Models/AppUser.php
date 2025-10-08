@@ -3,16 +3,23 @@
 namespace App\Models;
 
 use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
 
-class AppUser extends Model
+class AppUser extends Model implements AuthenticatableContract
 {
+    use AuthenticatableTrait;
+
     protected $table = 'app_user';
     protected $fillable = ['name', 'email', 'keycloak_id'];
 
-    // protected function casts(): array
-    // {
-    //     return [
-    //         'password' => 'hashed',
-    //     ];
-    // }
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($model) {
+            if (AppConfig::get('secret.root_user_id')) return;
+            AppConfig::set('secret.root_user_id', $model->id);
+        });
+    }
 }

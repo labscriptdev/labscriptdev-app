@@ -10,6 +10,10 @@
         text="logout"
         @click="app.logout()"
       />
+      <v-btn
+        text="Test"
+        to="/test"
+      />
     </div>
 
     <pre>{{ app }}</pre>

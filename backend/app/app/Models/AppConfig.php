@@ -14,20 +14,21 @@ class AppConfig extends Model
     {
         $paths = explode('.', $path);
         $name = array_shift($paths);
-        $config = AppConfig::where('name', $name)->first();
+        $configPath = implode('.', $paths);
+        $appConfig = AppConfig::firstOrNew(['name' => $name], ['config' => []]);
+        $config = array_merge(config("app_config.{$name}", []), $appConfig->config);
+        return Arr::get($config, $configPath, $default);
+    }
 
-        if (!$config) {
-            $config_file = config("app_config.{$name}", []);
-            AppConfig::create(['name' => $name, 'config' => $config_file]);
-            $config = AppConfig::where('name', $name)->first();
-        }
-
-        $config_data = $config->config;
-        $config_data = is_array($config_data) ? $config_data : [];
-        $config_data = array_merge($config_data, config("app_config.{$name}", []));
-
-        $config_path = implode('.', $paths);
-        $config_path = $config_path ? $config_path : null;
-        return Arr::get($config_data, $config_path, $default);
+    static function set($path, $value)
+    {
+        $paths = explode('.', $path);
+        $name = array_shift($paths);
+        $configPath = implode('.', $paths);
+        $appConfig = AppConfig::firstOrNew(['name' => $name], ['config' => []]);
+        $config = array_merge(config("app_config.{$name}", []), $appConfig->config);
+        $appConfig->config = Arr::set($config, $configPath, $value);
+        $appConfig->save();
+        return $appConfig->config;
     }
 }

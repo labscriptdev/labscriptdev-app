@@ -45,11 +45,8 @@ services:
         networks: [main_network]
         depends_on: [database, backend]
         environment:
-            # KC_DB: postgres
-            # KC_DB_URL_HOST: database
-            # KC_DB_URL_DATABASE: app
-            # KC_DB_USERNAME: app
-            # KC_DB_PASSWORD: app
+            KC_BOOTSTRAP_ADMIN_USERNAME: app
+            KC_BOOTSTRAP_ADMIN_PASSWORD: app
             KEYCLOAK_ADMIN: app
             KEYCLOAK_ADMIN_PASSWORD: app
             WEBHOOK_HTTP_BASE_PATH: "http://backend/api/app/keycloak_webhook"
@@ -57,7 +54,6 @@ services:
             WEBHOOK_HTTP_AUTH_PASSWORD: "app"
         volumes:
             - ./keycloak/providers:/opt/keycloak/providers
-            # - ./keycloak/themes:/opt/keycloak/themes
             - keycloak_volume:/opt/keycloak/data/
         ports:
             - 8080:8080
@@ -91,9 +87,6 @@ services:
         environment:
             RABBITMQ_DEFAULT_USER: app
             RABBITMQ_DEFAULT_PASS: app
-        # volumes:
-        #     - ./rabbitmq/.lib:/var/lib/rabbitmq
-        #     - ./rabbitmq/.log:/var/log/rabbitmq
         ports:
             - 5672:5672
             - 15672:15672
