@@ -17,9 +17,14 @@ class AppUser extends Model implements AuthenticatableContract
     {
         parent::boot();
 
-        static::created(function ($model) {
+        static::saved(function ($model) {
             if (AppConfig::get('secret.root_user_id')) return;
             AppConfig::set('secret.root_user_id', $model->id);
+        });
+
+        static::deleted(function ($model) {
+            if ($model->id != AppConfig::get('secret.root_user_id')) return;
+            AppConfig::set('secret.root_user_id', null);
         });
     }
 }
